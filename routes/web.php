@@ -1,104 +1,53 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AsesoriaController;
 
 /*
 |--------------------------------------------------------------------------
-| LOGIN
+| Rutas Públicas
 |--------------------------------------------------------------------------
 */
-
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
-
-Route::post('/login', function (Request $request) {
-
-    if (Auth::attempt([
-        'email' => $request->email,
-        'password' => $request->password
-    ])) {
-
-        $user = Auth::user();
-
-        if ($user->id_rol == 1) {
-            return redirect('/admin');
-        } elseif ($user->id_rol == 2) {
-            return redirect('/experto');
-        } else {
-            return redirect('/alumno');
-        }
-    }
-
-    return back()->with('error', 'Credenciales incorrectas');
+Route::get('/', function () {
+    return view('welcome');
 });
+
+// Rutas de Autenticación (Hechas a medida para Trueque-Tec)
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+Route::get('/registro', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/registro', [AuthController::class, 'register'])->name('register.post');
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 /*
 |--------------------------------------------------------------------------
-| LOGOUT
+| Rutas Protegidas (Solo para usuarios logueados de la UTVT)
 |--------------------------------------------------------------------------
 */
+Route::middleware(['auth'])->group(function () {
+    
+    // Panel Principal de Asesorías (Banco de Tiempo)
+    Route::get('/asesorias', [AsesoriaController::class, 'index'])->name('asesorias.index');
+    Route::get('/asesorias/crear', [AsesoriaController::class, 'create'])->name('asesorias.create');
+    Route::post('/asesorias', [AsesoriaController::class, 'store'])->name('asesorias.store');
+    
+    // Acciones del Trueque
+    Route::post('/asesorias/unirse/{id}', [AsesoriaController::class, 'unirse'])->name('asesorias.unirse');
+    Route::post('/asesorias/finalizar/{id}', [AsesoriaController::class, 'finalizarAsesoria'])->name('asesorias.finalizar');
+    
+    // Perfil del Usuario (Donde verá sus puntos y asesorías)
+    Route::get('/perfil', [AsesoriaController::class, 'perfil'])->name('perfil.index');
+    
+    // Rutas de edición y borrado (CRUD)
+    Route::get('/asesorias/{asesoria}/editar', [AsesoriaController::class, 'edit'])->name('asesorias.edit');
+    Route::put('/asesorias/{asesoria}', [AsesoriaController::class, 'update'])->name('asesorias.update');
+    Route::delete('/asesorias/{asesoria}', [AsesoriaController::class, 'destroy'])->name('asesorias.destroy');
 
-Route::get('/logout', function () {
-    Auth::logout();
-    return redirect('/login');
 });
 
-/*
-|--------------------------------------------------------------------------
-| VISTAS POR ROL
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/admin', function () {
-
-    if (!Auth::check() || Auth::user()->id_rol != 1) {
-        return redirect('/login');
-    }
-
-    $users = \App\Models\User::all();
-
-    return view('admin', compact('users'));
+Route::get('/', function () {
+    return redirect()->route('login');
 });
-
-Route::get('/experto', function () {
-
-    if (!Auth::check() || Auth::user()->id_rol != 2) {
-        return redirect('/login');
-    }
-
-    return view('experto');
-});
-
-Route::get('/alumno', function () {
-
-    if (!Auth::check() || Auth::user()->id_rol != 3) {
-        return redirect('/login');
-    }
-
-    return view('alumno');
-});
-
-Route::get('/hacer-experto/{id}', function ($id) {
-
-    if (!Auth::check() || Auth::user()->id_rol != 1) {
-        return redirect('/login');
-    }
-
-    $user = \App\Models\User::find($id);
-    $user->id_rol = 2;
-    $user->save();
-
-    return redirect('/admin');
-});
-
-/*
-|--------------------------------------------------------------------------
-| SISTEMA DE ASESORÍAS (CRUD FORMAL)
-|--------------------------------------------------------------------------
-*/
-
-Route::resource('asesorias', AsesoriaController::class)->middleware('auth');
