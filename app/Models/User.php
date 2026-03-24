@@ -2,38 +2,31 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Asesoria;
+use Laravel\Sanctum\HasApiTokens; // <--- 1. ASEGÚRATE DE QUE ESTA LÍNEA ESTÉ
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasApiTokens, Notifiable;
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-    'materia', 
-    'fecha', 
-    'descripcion', 
-    'estado', 
-    'id_lugar', 
-    'hora_ini', 
-    'hora_fin', 
-    'id_experto', 
-    'id_alumno'
-];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
+     * Campos que se pueden llenar al registrar o crear un usuario.
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'id_rol',   // Para identificar si es Admin, Experto o Alumno
+        'puntos',   // El saldo para el Trueque-Tec
+    ];
+
+    /**
+     * Atributos ocultos.
      */
     protected $hidden = [
         'password',
@@ -41,9 +34,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Casteo de atributos.
      */
     protected function casts(): array
     {
@@ -53,13 +44,21 @@ class User extends Authenticatable
         ];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relaciones con Asesorías
+    |--------------------------------------------------------------------------
+    */
+
+    // Un usuario puede dar muchas asesorías (como experto)
     public function asesoriasComoExperto()
     {
-        return $this->hasMany(Asesoria::class, 'experto_id');
+        return $this->hasMany(Asesoria::class, 'id_experto');
     }
 
-        public function asesoriasComoAlumno()
+    // Un usuario puede recibir muchas asesorías (como alumno)
+    public function asesoriasComoAlumno()
     {
-        return $this->hasMany(Asesoria::class, 'alumno_id');
+        return $this->hasMany(Asesoria::class, 'id_alumno');
     }
 }

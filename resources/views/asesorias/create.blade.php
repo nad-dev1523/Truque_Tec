@@ -18,7 +18,7 @@
                 <input type="text" name="materia" class="form-control rounded-pill px-3 @error('materia') is-invalid @enderror" 
                        placeholder="Ej. Estructura de Datos" value="{{ old('materia') }}" required>
                 @error('materia')
-                    <div class="invalid-feedback ml-3">{{ $message }}</div>
+                    <div class="invalid-feedback ms-3">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -28,7 +28,7 @@
                     <input type="date" name="fecha" class="form-control rounded-pill px-3 @error('fecha') is-invalid @enderror" 
                            min="{{ date('Y-m-d') }}" value="{{ old('fecha') }}" required>
                     @error('fecha')
-                        <div class="invalid-feedback ml-3">{{ $message }}</div>
+                        <div class="invalid-feedback ms-3">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="col-6 mb-3">
@@ -42,7 +42,7 @@
                         @endforeach
                     </select>
                     @error('id_lugar')
-                        <div class="invalid-feedback ml-3">{{ $message }}</div>
+                        <div class="invalid-feedback ms-3">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
@@ -53,7 +53,7 @@
                     <input type="time" name="hora_ini" class="form-control rounded-pill px-3 @error('hora_ini') is-invalid @enderror" 
                            value="{{ old('hora_ini') }}" required>
                     @error('hora_ini')
-                        <div class="invalid-feedback ml-3">{{ $message }}</div>
+                        <div class="invalid-feedback ms-3">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="col-6 mb-3">
@@ -61,7 +61,7 @@
                     <input type="time" name="hora_fin" class="form-control rounded-pill px-3 @error('hora_fin') is-invalid @enderror" 
                            value="{{ old('hora_fin') }}" required>
                     @error('hora_fin')
-                        <div class="invalid-feedback ml-3">{{ $message }}</div>
+                        <div class="invalid-feedback ms-3">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
@@ -71,7 +71,7 @@
                 <textarea name="descripcion" class="form-control rounded-4 px-3 @error('descripcion') is-invalid @enderror" rows="3" 
                           placeholder="¿Qué temas se revisarán en la sesión?" required>{{ old('descripcion') }}</textarea>
                 @error('descripcion')
-                    <div class="invalid-feedback ml-3">{{ $message }}</div>
+                    <div class="invalid-feedback ms-3">{{ $message }}</div>
                 @enderror
             </div>
             

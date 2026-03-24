@@ -8,6 +8,16 @@
             <p class="text-muted">Intercambia conocimientos en la UTVT</p>
         </div>
 
+            @if ($errors->any())
+        <div class="alert alert-danger shadow-sm rounded-4">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
         <form action="{{ route('register.post') }}" method="POST">
             @csrf
             <div class="mb-3">
